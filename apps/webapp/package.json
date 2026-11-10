@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "portless",
-    "dev:app": "vite --host 127.0.0.1 --port ${PORT:-5180}",
+    "dev:app": "vite --host 127.0.0.1 --port 5180",
     "build": "vite build",
     "preview": "vite preview",
     "check:build": "node scripts/check-build.mjs"
