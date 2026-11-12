@@ -15,7 +15,7 @@ export default class EventStormingViewOptions {
 
   /** Captions default to ON — a fresh board explains the sticky color grammar by itself. */
   private _typeCaptionsVisible = true;
-  private _useRules = false;
+  private _useRules = true;
 
   constructor(
     private readonly eventBus: EventBus,
