@@ -68,7 +68,10 @@ export default class EventStormingAutoFlowBehavior {
     });
 
     if (canConnect) {
-      this.modeling.connect(current, shape);
+      this.modeling.connect(current, shape, {
+        type: 'connection',
+        eventStormingType: 'arrow',
+      });
     }
 
     this.selection.select(shape);
