@@ -15,6 +15,7 @@ export default class EventStormingViewOptions {
 
   /** Captions default to ON — a fresh board explains the sticky color grammar by itself. */
   private _typeCaptionsVisible = true;
+  private _useRules = false;
 
   constructor(
     private readonly eventBus: EventBus,
@@ -33,5 +34,15 @@ export default class EventStormingViewOptions {
     // then clears and redraws each one, and the renderer reads the flag per drawShape.
     const stickies = this.elementRegistry.filter(isSticky);
     if (stickies.length) this.eventBus.fire('elements.changed', { elements: stickies });
+  }
+
+  useRules(): boolean {
+    return this._useRules;
+  }
+
+  setUseRules(useRules: boolean): void {
+    if (useRules === this._useRules) return;
+    this._useRules = useRules;
+    this.eventBus.fire('eventStorming.viewOptions.useRulesChanged', { useRules });
   }
 }
