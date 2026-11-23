@@ -1,0 +1,42 @@
+EVENT STORMING WEB APP - CONTEXT & REFACTOR PLAN
+
+1. Context and Info About the App and Code
+------------------------------------------
+The web application (`apps/webapp`) is an in-browser Event Storming modeling tool. 
+- Core Rendering & Diagramming: Built on top of `@miragon/event-storming-renderer` (which wraps `diagram-js`) and `@miragon/event-storming-schema-model`.
+- UI Chrome: Uses `@miragon/modeler-shell` (`mountShell`) for toolbars, menus, dialogs, empty states, and the problems panel.
+- Key Capabilities:
+  - Document lifecycle (new boards, examples, replacing boards with undo options).
+  - File IO: Opening `.storm` (DSL) and `.json` board files, drag-and-drop support, and exporting to SVG, PNG (rasterised via HTML canvas with transparency options), JSON, and `.storm`.
+  - URL Sharing: Compressing board DSL using browser-native `deflate-raw` compression and encoding as URL-safe Base64 in the URL hash (`#mz=...`).
+  - Preferences: Persisting view preferences (like type captions visibility) in `localStorage`.
+  - Error Handling & Problems: Parsing import warnings, showing problem summaries, and catching undrawable board errors.
+
+2. Microkernel Refactor Plan
+----------------------------
+To transition the monolithic `main.ts` and related utilities into a clean, extensible microkernel architecture:
+
+- The Kernel (Core Host):
+  - Acts as a slim orchestrator providing shared access to the Modeler and Shell.
+  - Implements a central event bus/mediator for indirect communication between plugins.
+  - Manages application lifecycle (startup, registration, and clean teardown).
+
+- Plugin Contract:
+  ```typescript
+  interface Plugin {
+    id: string;
+    install(kernel: Kernel): void;
+    destroy?(): void;
+  }
+  ```
+
+- Proposed Plugins:
+  1. Document Plugin: Manages active document state, empty state, titles, and replace/undo logic.
+  2. IO Plugin: Handles file picker, drag-and-drop, and all export routines (SVG, PNG, JSON, `.storm`).
+  3. Share/URL Plugin: Manages debounced/immediate URL hash synchronisation (`#mz=`), hash change listeners for pasted links, and clipboard copying.
+  4. Preferences Plugin: Manages browser local storage persistence for view options.
+  5. Problems Plugin: Bridges import warnings to the shell problems panel and handles row selection/navigation.
+  6. Keyboard Shortcuts Plugin: Handles application-level key bindings (`Cmd/Ctrl+O`, `Cmd/Ctrl+S`, undo-replace).
+
+- Bootstrapping:
+  - `main.ts` becomes a simple bootstrap script that initialises the core Modeler/Shell, instantiates the Kernel, registers the plugins, and starts the application.
