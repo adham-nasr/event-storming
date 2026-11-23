@@ -48,7 +48,7 @@ export default class EventStormingAutoFlowBehavior {
     const normalizedNextType = nextType.toLowerCase() === 'domainevent' ? 'event' : nextType.toLowerCase() === 'externalsystem' ? 'external' : nextType.toLowerCase();
 
     const position = {
-      x: current.x + current.width + 80,
+      x: current.x + current.width + 130,
       y: current.y
     };
 
@@ -56,8 +56,8 @@ export default class EventStormingAutoFlowBehavior {
       type: 'eventStorming.shape',
       eventStormingType: normalizedNextType,
       eventStormingLabel: nextType,
-      width: 100,
-      height: 65
+      width: 130,
+      height: 110
     });
 
     this.modeling.createShape(shape, position, current.parent);
