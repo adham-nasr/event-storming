@@ -61,6 +61,8 @@ export interface BoardLevels {
 export interface TypeCaptions {
   typeCaptionsVisible(): boolean;
   setTypeCaptionsVisible(visible: boolean): void;
+  useRules?(): boolean;
+  setUseRules?(useRules: boolean): void;
 }
 
 export interface BoardExport {
@@ -141,31 +143,46 @@ function exportEntries(exports: BoardExports): BoardMenuAction[] {
 
 /** The menu groups of the board (guide §5.4): Model, Export with PNG first, Help. */
 export function boardMenu(actions: BoardMenuActions): BoardMenu {
+  const menuEntries: BoardMenuEntry[] = [
+    {
+      kind: 'radio',
+      id: 'level',
+      label: 'Level',
+      options: BOARD_LEVELS,
+      value: () => actions.levels.getLevel(),
+      onSelect: (value) => {
+        if (isBoardLevel(value)) actions.levels.setLevel(value);
+      },
+    },
+    {
+      kind: 'checkbox',
+      id: 'type-captions',
+      label: 'Type captions',
+      // A view preference, not board content: it stays usable on a read-only canvas.
+      keepEnabledWhenReadOnly: true,
+      checked: () => actions.typeCaptions.typeCaptionsVisible(),
+      onToggle: (visible) => {
+        actions.typeCaptions.setTypeCaptionsVisible(visible);
+        actions.onTypeCaptionsToggled?.(visible);
+      },
+    },
+  ];
+
+  if (actions.typeCaptions.useRules && actions.typeCaptions.setUseRules) {
+    menuEntries.push({
+      kind: 'checkbox',
+      id: 'use-rules',
+      label: 'Use rules',
+      keepEnabledWhenReadOnly: true,
+      checked: () => actions.typeCaptions.useRules!(),
+      onToggle: (checked) => {
+        actions.typeCaptions.setUseRules!(checked);
+      },
+    });
+  }
+
   return {
-    model: [
-      {
-        kind: 'radio',
-        id: 'level',
-        label: 'Level',
-        options: BOARD_LEVELS,
-        value: () => actions.levels.getLevel(),
-        onSelect: (value) => {
-          if (isBoardLevel(value)) actions.levels.setLevel(value);
-        },
-      },
-      {
-        kind: 'checkbox',
-        id: 'type-captions',
-        label: 'Type captions',
-        // A view preference, not board content: it stays usable on a read-only canvas.
-        keepEnabledWhenReadOnly: true,
-        checked: () => actions.typeCaptions.typeCaptionsVisible(),
-        onToggle: (visible) => {
-          actions.typeCaptions.setTypeCaptionsVisible(visible);
-          actions.onTypeCaptionsToggled?.(visible);
-        },
-      },
-    ],
+    model: menuEntries,
     export: exportEntries(actions.exports),
     help: [
       {
