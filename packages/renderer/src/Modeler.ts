@@ -28,7 +28,7 @@ import { eventStormingOrderingModule } from './ordering/index.js';
 import { eventStormingDrawToolModule } from './draw-tool/index.js';
 import { eventStormingResizeModule } from './resize/index.js';
 import { eventStormingReadOnlyModule } from './read-only/index.js';
-import EventStormingAutoFlowBehavior from './rules/EventStormingAutoFlowBehavior.js';
+import EventStormingGhostSuggestion from './rules/EventStormingGhostSuggestion.js';
 
 /**
  * Full Event Storming editor: palette/create, free move with sticky-center snapping, connect
@@ -65,8 +65,8 @@ export class Modeler extends NavigatedViewer {
       eventStormingDrawToolModule,
       eventStormingResizeModule,
       {
-        __init__: ['eventStormingAutoFlowBehavior'],
-        eventStormingAutoFlowBehavior: ['type', EventStormingAutoFlowBehavior],
+        __init__: ['eventStormingGhostSuggestion'],
+        eventStormingGhostSuggestion: ['type', EventStormingGhostSuggestion],
       },
     ];
   }

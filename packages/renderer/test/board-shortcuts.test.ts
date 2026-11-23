@@ -75,6 +75,9 @@ describe('boardShortcuts', () => {
       ['Domain event at the pointer', ['E']],
       ['Command at the pointer', ['C']],
       ['Finish a drawing', ['Enter', 'Esc', 'Double-click']],
+      ['Accept the suggested next sticky', ['Tab', 'Enter']],
+      ['Cycle the suggested kinds', ['↑', '↓']],
+      ['Dismiss the suggestion', ['Esc']],
     ]);
     expect(rowsOf('mac', 'Tools').get('Lasso by dragging')).toEqual(['⇧ Drag']);
   });

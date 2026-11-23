@@ -125,6 +125,20 @@ export const COLORS = {
  */
 export const DRAWING_INK = MIRAGON.schwarz;
 
+/** Layer of the ghost (next-sticky) suggestion. It is local to this client, so exports skip it. */
+export const GHOST_LAYER_NAME = 'event-storming-ghost';
+
+/** Opacity of the ghost sticky and its arrow: faded, so it reads as a suggestion, not a sticky. */
+export const GHOST_OPACITY = 0.45;
+
+/** Ghost arrow ink and hint chip, from the palette (black and white), never a var(). */
+export const GHOST_INK = MIRAGON.schwarz;
+export const GHOST_CHIP = {
+  fill: MIRAGON.weiss,
+  stroke: MIRAGON.schwarz,
+  text: MIRAGON.schwarz,
+} as const;
+
 export const FONT = {
   /**
    * Set as the `font-family` attribute DIRECTLY on all SVG text elements (canvas labels and

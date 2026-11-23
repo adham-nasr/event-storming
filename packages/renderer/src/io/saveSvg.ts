@@ -1,5 +1,6 @@
 import type Canvas from 'diagram-js/lib/core/Canvas';
 import { DEFAULT_BOARD_SIZE } from '@miragon/event-storming-schema-model';
+import { GHOST_LAYER_NAME } from '../draw/styles.js';
 
 export interface SvgBounds {
   x: number;
@@ -38,6 +39,8 @@ export function saveSVG(canvas: Canvas, bounds?: SvgBounds): { svg: string } {
   // neutralize pan/zoom by letting the viewBox (above) determine the geometry.
   const viewport = clone.querySelector<SVGGElement>('.viewport');
   if (viewport) viewport.removeAttribute('transform');
+  // The ghost suggestion is a live hint, not board content.
+  clone.querySelector(`.layer-${GHOST_LAYER_NAME}`)?.remove();
 
   const svg = new XMLSerializer().serializeToString(clone);
   return { svg: '<?xml version="1.0" encoding="utf-8"?>\n' + svg };

@@ -170,6 +170,9 @@ export function boardShortcuts(
         { action: 'Domain event at the pointer', keys: ['E'] },
         { action: 'Command at the pointer', keys: ['C'] },
         { action: 'Finish a drawing', keys: ['Enter', 'Esc', 'Double-click'] },
+        { action: 'Accept the suggested next sticky', keys: ['Tab', 'Enter'] },
+        { action: 'Cycle the suggested kinds', keys: ['↑', '↓'] },
+        { action: 'Dismiss the suggestion', keys: ['Esc'] },
       ],
     },
   ];

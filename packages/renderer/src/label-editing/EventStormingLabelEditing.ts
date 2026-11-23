@@ -28,6 +28,9 @@ import {
   type NoteToolbarAction,
 } from './note-editor-dom.js';
 
+/** Fired when an open label editor closes (commit, cancel or blur). Chains follow-up work. */
+export const LABEL_EDITING_CLOSED_EVENT = 'eventStorming.labelEditing.closed';
+
 interface ActiveEdit {
   field: HTMLElement;
   /** Puts the field over its element again, for the current zoom and scroll. */
@@ -72,7 +75,7 @@ export function sanitizeLabel(raw: string): string {
 /**
  * Custom inline label editing as an HTML overlay (deliberately not diagram-js direct-editing).
  * Commit goes through `eventStormingModeling` -> commandStack (undo). Sticky text is
- * multi-line, so stickies are edited in a `<textarea>` (Enter = line break, Cmd/Ctrl+Enter or
+ * multi-line, so stickies are edited in a `<textarea>` (Enter = save, Shift+Enter = line break, Cmd/Ctrl+Enter or
  * click outside = save); connection labels use a single-line `<input>` (Enter = save). NOTES
  * get the WYSIWYG contenteditable overlay instead (see `activateNote`) — same commit/cancel
  * semantics, plus live bold/italic/bullet formatting and the floating alignment toolbar.
@@ -91,7 +94,7 @@ export default class EventStormingLabelEditing {
   private resumeTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(
-    eventBus: EventBus,
+    private readonly eventBus: EventBus,
     private readonly canvas: Canvas,
     private readonly modeling: EventStormingModeling,
     private readonly elementRegistry?: ElementRegistry,
@@ -125,6 +128,15 @@ export default class EventStormingLabelEditing {
    * would land on a detached shape and be wiped with the history. Hosts re-import remote states
    * while the user types; `resumeAfterImport` brings the editor back with the typed text.
    */
+  /** True while a label editor is open; the ghost suggestion yields to it. */
+  isEditing(): boolean {
+    return this.active !== null;
+  }
+
+  private notifyClosed(element: EventStormingShape | EventStormingConnection): void {
+    this.eventBus.fire(LABEL_EDITING_CLOSED_EVENT, { element });
+  }
+
   suspend(): void {
     clearTimeout(this.resumeTimer);
     if (!this.active) return;
@@ -215,6 +227,7 @@ export default class EventStormingLabelEditing {
       field.removeEventListener('blur', onBlur);
       field.remove();
       this.active = null;
+      this.notifyClosed(element);
       this.canvas.restoreFocus?.();
     };
     const commit = () => {
@@ -235,9 +248,9 @@ export default class EventStormingLabelEditing {
         cleanup();
         return;
       }
-      if (e.key === 'Enter') {
-        // Save only with Cmd/Ctrl -> plain Enter inserts a line break (sticky text is multi-line).
-        if (!(e.metaKey || e.ctrlKey)) return;
+      // Enter saves the label. Shift+Enter keeps a line break for multi-line sticky text, and during
+      // IME composition Enter confirms the composed text instead.
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
         e.preventDefault();
         commit();
       }
@@ -355,6 +368,7 @@ export default class EventStormingLabelEditing {
       editor.remove();
       toolbar.remove();
       this.active = null;
+      this.notifyClosed(element);
       this.restoreNoteAlign = undefined;
       this.canvas.restoreFocus?.();
     };
@@ -455,6 +469,7 @@ export default class EventStormingLabelEditing {
       field.removeEventListener('blur', onBlur);
       field.remove();
       this.active = null;
+      this.notifyClosed(conn);
       this.canvas.restoreFocus?.();
     };
     const commit = () => {

@@ -7,7 +7,10 @@ export const labelEditingModule: ModuleDeclaration = {
   eventStormingLabelEditing: ['type', EventStormingLabelEditing],
 };
 
-export { default as EventStormingLabelEditing } from './EventStormingLabelEditing.js';
+export {
+  default as EventStormingLabelEditing,
+  LABEL_EDITING_CLOSED_EVENT,
+} from './EventStormingLabelEditing.js';
 export {
   noteMarkdownToDom,
   domToNoteMarkdown,

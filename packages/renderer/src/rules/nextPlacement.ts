@@ -5,7 +5,11 @@ export interface Box {
   height: number;
 }
 
-const HORIZONTAL_GAP = 65;
+/**
+ * Clears the context pad, which sits 8px right of the selected sticky and is up to 96px wide
+ * (three 28px entries), so a ghost or a new sticky never sits under its entries.
+ */
+const HORIZONTAL_GAP = 120;
 const ROW_GAP = 30;
 
 function overlaps(first: Box, second: Box): boolean {

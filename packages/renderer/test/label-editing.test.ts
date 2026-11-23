@@ -390,6 +390,20 @@ describe('EventStormingLabelEditing: a view change while the editor is open', ()
     expect(harness.calls.updateLabel).toEqual([[sticky, 'Order Confirmed']]);
   });
 
+  it('saves a sticky label on Enter, and keeps Shift+Enter for a line break', () => {
+    harness.editing.activate(sticky);
+    const field = harness.container.querySelector('textarea')!;
+    field.value = 'Order Confirmed';
+
+    field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true }));
+    expect(harness.calls.updateLabel).toEqual([]);
+    expect(harness.container.querySelector('textarea')).toBe(field);
+
+    field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(harness.calls.updateLabel).toEqual([[sticky, 'Order Confirmed']]);
+    expect(harness.container.querySelector('textarea')).toBeNull();
+  });
+
   it('keeps an arrow label editor open and moves it with the view', () => {
     const conn = {
       id: 'arrow_1',

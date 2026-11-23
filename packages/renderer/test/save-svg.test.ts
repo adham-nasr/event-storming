@@ -42,6 +42,22 @@ describe('saveSVG', () => {
     expect(svg).not.toContain('matrix(2 0 0 2 10 10)');
   });
 
+  it('leaves the ghost suggestion layer out of the picture', () => {
+    const container = containerWithPaletteFirst();
+    const board = container.querySelector('svg[tabindex]') as SVGSVGElement;
+    const viewport = board.querySelector('.viewport') as SVGGElement;
+    const ghost = document.createElementNS(SVG_NS, 'g');
+    ghost.setAttribute('class', 'layer-event-storming-ghost');
+    ghost.setAttribute('data-ghost', 'hint');
+    viewport.append(ghost);
+    const canvas = { getContainer: () => container } as unknown as Canvas;
+
+    const { svg } = saveSVG(canvas, { x: 0, y: 0, width: 300, height: 200 });
+
+    expect(svg).not.toContain('data-ghost');
+    expect(svg).toContain('data-element-id="event_order_placed"');
+  });
+
   it('leaves the live canvas’s focus and screen reader attributes out of the picture', () => {
     const container = containerWithPaletteFirst();
     const canvas = { getContainer: () => container } as unknown as Canvas;
