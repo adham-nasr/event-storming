@@ -162,7 +162,7 @@ export default class EventStormingKeyboard {
   }
 }
 
-function isCanvasTarget(target: EventTarget | null, container: HTMLElement): boolean {
+export function isCanvasTarget(target: EventTarget | null, container: HTMLElement): boolean {
   if (!(target instanceof Node)) return false;
   // Body/html as target means nothing is focused — the single-key tools must work right away.
   return (
@@ -170,7 +170,7 @@ function isCanvasTarget(target: EventTarget | null, container: HTMLElement): boo
   );
 }
 
-function isEditableTarget(target: EventTarget | null): boolean {
+export function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
   return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
